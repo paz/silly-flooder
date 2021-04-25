@@ -11,26 +11,40 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class cum {
     public static void main(String[] args) throws Exception {
+        int winAmount = 30;
+        int dlThreadAmount = 50;
+        int windowMoveDelayMS = 100;
         System.out.println("Retard");
-        int windowAmount = 30;
+        ExecutorService excv = Executors.newFixedThreadPool(dlThreadAmount);
         List<ImageIcon> images = new ArrayList<>();
-        String resp = getHTML("https://rule34.xxx/index.php?page=dapi&s=post&q=index&tags=femboy&limit=" + windowAmount);
+        String resp = getHTML("https://rule34.xxx/index.php?page=dapi&s=post&q=index&tags=femboy&limit=" + winAmount);
         JSONObject respJson = XML.toJSONObject(resp);
-        for (int i = 0; i < windowAmount; i++) {
-            String furl = new JSONObject(respJson.getJSONObject("posts").getJSONArray("post").get(i).toString()).getString("file_url");
-            System.out.print("Downloading " + furl + " (" + (i + 1) + "/" + windowAmount + ") ... ");
-            images.add(new ImageIcon(new URL(furl)));
-            System.out.println("DONE");
+        for (int i = 0; i < winAmount; i++) {
+            int finalI = i;
+            Runnable shit = () -> {
+                try {
+                    String furl = new JSONObject(respJson.getJSONObject("posts").getJSONArray("post").get(finalI).toString()).getString("file_url");
+                    System.out.println("Downloading " + furl + " (" + (finalI + 1) + "/" + winAmount + ") ... ");
+                    images.add(new ImageIcon(new URL(furl)));
+                    System.out.println("Downloaded " + furl);
+                } catch (Exception ignored) {
+                }
+            };
+            excv.execute(shit);
         }
+        excv.shutdown();
+        excv.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
         Random rnd = new Random();
         List<JFrame> windows = new ArrayList<>();
-        for (int i = 0; i < windowAmount; i++) {
-            int index = (int) Math.floor(Math.random() * images.size());
-            ImageIcon current = images.get(index);
+        for (int i = 0; i < winAmount; i++) {
+            ImageIcon current = images.get(i);
             JFrame f = displayImageInWindow(current);
             f.setLocation(rnd.nextInt(d.width), rnd.nextInt(d.height));
             windows.add(f);
@@ -38,10 +52,15 @@ public class cum {
         new Thread(() -> {
             while (true) {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(windowMoveDelayMS);
+                    boolean movedAnything = false;
                     for (JFrame window : windows) {
                         if (!window.isVisible()) continue;
                         window.setLocation(rnd.nextInt(d.width), rnd.nextInt(d.height));
+                        movedAnything = true;
+                    }
+                    if (!movedAnything) {
+                        System.exit(0);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();

@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit;
 public class cum {
     public static void main(String[] args) throws Exception {
         int winAmount = 30;
-        int dlThreadAmount = 50;
-        int windowMoveDelayMS = 100;
+        int dlThreadAmount = 15;
+        int windowMoveDelayMS = 1;
         System.out.println("Retard");
         ExecutorService excv = Executors.newFixedThreadPool(dlThreadAmount);
         List<ImageIcon> images = new ArrayList<>();
@@ -52,11 +52,18 @@ public class cum {
         new Thread(() -> {
             while (true) {
                 try {
-                    Thread.sleep(windowMoveDelayMS);
                     boolean movedAnything = false;
                     for (JFrame window : windows) {
                         if (!window.isVisible()) continue;
-                        window.setLocation(rnd.nextInt(d.width), rnd.nextInt(d.height));
+                        Thread.sleep(windowMoveDelayMS);
+                        Point winl = window.getLocation();
+                        int nx = rnd.nextInt(7)-3+winl.x;
+                        int ny = rnd.nextInt(7)-3+winl.y;
+                        nx = Math.min(nx, d.width);
+                        nx = Math.max(nx, 0);
+                        ny = Math.min(ny, d.height);
+                        ny = Math.max(ny, 0);
+                        window.setLocation(nx, ny);
                         movedAnything = true;
                     }
                     if (!movedAnything) {

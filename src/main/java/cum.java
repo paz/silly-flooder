@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class cum {
     public static void main(String[] args) throws Exception {
-        System.out.println("haram");
+        System.out.println("Retard");
         int windowAmount = 30;
         List<ImageIcon> images = new ArrayList<>();
         String resp = getHTML("https://rule34.xxx/index.php?page=dapi&s=post&q=index&tags=femboy&limit=" + windowAmount);
@@ -51,26 +51,26 @@ public class cum {
 
     }
 
-    public static JFrame displayImageInWindow(ImageIcon bruh) {
-        bruh.setImage(getScaledImage(bruh.getImage(), 300, 300));
+    public static JFrame displayImageInWindow(ImageIcon img) {
+        img.setImage(getScaledImage(img.getImage()));
         JFrame f = new JFrame("0");
-        JLabel image = new JLabel(bruh);
-        image.setBounds(0, 0, bruh.getIconWidth(), bruh.getIconHeight());
+        JLabel image = new JLabel(img);
+        image.setBounds(0, 0, img.getIconWidth(), img.getIconHeight());
         f.setLocationRelativeTo(null);
         f.setUndecorated(true);
-        f.setSize(bruh.getIconWidth(), bruh.getIconHeight());
+        f.setSize(img.getIconWidth(), img.getIconHeight());
         f.add(image);
         f.setVisible(true);
         f.setAlwaysOnTop(true);
         return f;
     }
 
-    private static Image getScaledImage(Image srcImg, int w, int h) {
-        BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+    private static Image getScaledImage(Image srcImg) {
+        BufferedImage resizedImg = new BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = resizedImg.createGraphics();
 
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.drawImage(srcImg, 0, 0, w, h, null);
+        g2.drawImage(srcImg, 0, 0, 300, 300, null);
         g2.dispose();
 
         return resizedImg;

@@ -17,7 +17,53 @@ import java.util.concurrent.TimeUnit;
 
 public class cum {
     public static void main(String[] args) throws Exception {
+
+        // -DwinAmount - Amount of images to display
         int winAmount = 30;
+        int invalidWinAmount = 0;
+        if(System.getProperty("winAmount") != null) {
+            try
+            { 
+                Integer.parseInt(System.getProperty("winAmount"));
+            }
+            catch (NumberFormatException e)
+            { 
+                System.out.println(System.getProperty("winAmount") + " is not a valid integer");
+                invalidWinAmount = 1;
+            }
+            if (invalidWinAmount != 1) {
+                winAmount = Integer.valueOf(System.getProperty("winAmount"));
+            }
+        }
+
+        // -Dquality - low/medium/high -> preview/sample/file
+        String quality;
+        if(System.getProperty("quality") != null) {
+            String qualitySetting = System.getProperty("quality");
+            switch (qualitySetting) {
+                case "low":
+                    quality = "preview_url";
+                    break;
+            
+                case "medium":
+                    quality = "sample_url";
+                    break;
+
+                case "high":
+                    quality = "file_url";
+                    break;
+                
+                default:
+                    System.out.println("Invalid quality setting - should be low/medium/high - default medium");
+                    quality = "sample_url";
+                    break;
+            }
+        } else {
+            quality = "sample_url";
+        }
+
+        final int finalAmount = winAmount;
+
         int dlThreadAmount = 15;
         int windowMoveDelayMS = 1;
         ExecutorService excv = Executors.newFixedThreadPool(dlThreadAmount);
@@ -28,8 +74,8 @@ public class cum {
             int finalI = i;
             Runnable shit = () -> {
                 try {
-                    String furl = new JSONObject(respJson.getJSONObject("posts").getJSONArray("post").get(finalI).toString()).getString("file_url");
-                    System.out.println("Downloading " + furl + " (" + (finalI + 1) + "/" + winAmount + ") ... ");
+                    String furl = new JSONObject(respJson.getJSONObject("posts").getJSONArray("post").get(finalI).toString()).getString(quality);
+                    System.out.println("Downloading " + furl + " (" + (finalI + 1) + "/" + finalAmount + ") ... ");
                     images.add(new ImageIcon(new URL(furl)));
                     System.out.println("Downloaded " + furl);
                 } catch (Exception ignored) {

@@ -23,3 +23,6 @@
 hs_err_pid*
 
 .idea
+.settings/org.eclipse.buildship.core.prefs
+.project
+.gradle

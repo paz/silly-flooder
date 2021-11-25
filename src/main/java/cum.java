@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -35,6 +36,26 @@ public class cum {
                 winAmount = Integer.valueOf(System.getProperty("winAmount"));
             }
         }
+        final int finalAmount = winAmount;
+
+        // -DdlThreadAmount - Amount of download threads
+        int earlydlThreadAmount = 15;
+        int invalidDlThreadAmount = 0;
+        if(System.getProperty("dlThreadAmount") != null) {
+            try
+            { 
+                Integer.parseInt(System.getProperty("dlThreadAmount"));
+            }
+            catch (NumberFormatException e)
+            { 
+                System.out.println(System.getProperty("dlThreadAmount") + " is not a valid integer");
+                invalidDlThreadAmount = 1;
+            }
+            if (invalidDlThreadAmount != 1) {
+                earlydlThreadAmount = Integer.valueOf(System.getProperty("dlThreadAmount"));
+            }
+        }
+        final int dlThreadAmount = earlydlThreadAmount;
 
         // -Dquality - low/medium/high -> preview/sample/file
         String quality;
@@ -62,13 +83,18 @@ public class cum {
             quality = "sample_url";
         }
 
-        final int finalAmount = winAmount;
+        // -Dtags - search tags - default femboy
+        String tags;
+        if(System.getProperty("tags") != null) {
+            tags = System.getProperty("tags");
+        } else {
+            tags = "femboy";
+        }
 
-        int dlThreadAmount = 15;
         int windowMoveDelayMS = 1;
         ExecutorService excv = Executors.newFixedThreadPool(dlThreadAmount);
         List<ImageIcon> images = new ArrayList<>();
-        String resp = getHTML("https://rule34.xxx/index.php?page=dapi&s=post&q=index&tags=femboy&limit=" + winAmount);
+        String resp = getHTML("https://rule34.xxx/index.php?page=dapi&s=post&q=index&tags=" + URLEncoder.encode(tags, "UTF-8") + "&limit=" + winAmount);
         JSONObject respJson = XML.toJSONObject(resp);
         for (int i = 0; i < winAmount; i++) {
             int finalI = i;

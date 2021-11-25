@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'me.0x150'
-version '1.0'
+version '1.1'
 
 repositories {
     mavenCentral()
@@ -14,8 +14,7 @@ dependencies {
     implementation 'org.jetbrains:annotations:20.1.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    implementation 'org.json:json:20171018'
-
+    implementation 'org.json:json:20210307'
 }
 
 test {
@@ -25,5 +24,8 @@ test {
 jar {
     manifest {
         attributes "Main-Class": "cum"
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }

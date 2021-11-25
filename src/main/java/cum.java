@@ -20,7 +20,6 @@ public class cum {
         int winAmount = 30;
         int dlThreadAmount = 15;
         int windowMoveDelayMS = 1;
-        System.out.println("Retard");
         ExecutorService excv = Executors.newFixedThreadPool(dlThreadAmount);
         List<ImageIcon> images = new ArrayList<>();
         String resp = getHTML("https://rule34.xxx/index.php?page=dapi&s=post&q=index&tags=femboy&limit=" + winAmount);
